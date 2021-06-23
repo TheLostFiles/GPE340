@@ -1,15 +1,23 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class Pawn : MonoBehaviour
 {
-
     private Animator anim;
 
     public float speed;
     public float turnSpeed = 180;
     public Camera playerCamera;
+
+    public Weapon weapon;
+
+    public GameObject pistol;
+    public GameObject rifle;
+    public bool hasRifle;
+
+    public Text healthText;
 
 
     // Start is called before the first frame update
@@ -45,7 +53,56 @@ public class Pawn : MonoBehaviour
         //Calls function.
         RotateToMousePointer();
 
+        //Handle Trigger 
+        if (Input.GetButtonDown("Fire1"))
+        {
+            
+            weapon.OnMainActionStart.Invoke();
+        }
+        if(Input.GetButton("Fire1"))
+        {
+            
+            weapon.OnMainActionHold.Invoke();
+        }
+        if (Input.GetButtonUp("Fire1"))
+        {
+            weapon.OnTriggerRelease();
+            weapon.OnMainActionEnd.Invoke();
+        }
 
+        // Checks the scroll wheel scrolls.
+        if(Input.mouseScrollDelta.y != 0)
+        {
+            // Runs EquipWeapon.
+            EquipWeapon(weapon);
+        }
+        // Keeps the health UI Updated.
+        healthText.text = "Health: " + GetComponent<Health>().currentHealth + "/" + GetComponent<Health>().maxHealth;
+
+    }
+
+    public void EquipWeapon(Weapon weaponSwap)
+    {
+        // Checks if the has rifle bool is true.
+        if (hasRifle)
+        {
+            // If the weapon is a pistol and you scroll this switchs it to the rifle.
+            if(weaponSwap == pistol.GetComponent<PistolWeapon>())
+            {
+                pistol.SetActive(false);
+                rifle.SetActive(true);
+                weapon = rifle.GetComponent<RifleWeapon>();
+            }
+        }
+        // If the weapon is a rifle and you scroll this switchs it to the pistol.
+        if (weaponSwap == rifle.GetComponent<RifleWeapon>())
+        {
+            pistol.SetActive(true);
+            rifle.SetActive(false);
+            weapon = pistol.GetComponent<PistolWeapon>();
+        }
+
+        
     }
 
     public void RotateToMousePointer()
@@ -78,7 +135,54 @@ public class Pawn : MonoBehaviour
 
         //Sets a speed and place to turn to.
         transform.rotation = Quaternion.RotateTowards(transform.rotation, goalRotation, turnSpeed * Time.deltaTime);
+    }
 
+    public void AddToScore(float pointsToAdd)
+    {
+        // TODO: Add points to my score
+    }
 
+    // This makes the hands move to their designated spots.
+    public void OnAnimatorIK(int layerIndex)
+    {
+        if(weapon != null)
+        {
+            anim.SetLookAtPosition(weapon.transform.position + (5 * weapon.transform.forward));
+            anim.SetLookAtWeight(1);
+
+            if(weapon.rightHandPoint != null)
+            {
+                anim.SetIKPosition(AvatarIKGoal.RightHand, weapon.rightHandPoint.position);
+                anim.SetIKPositionWeight(AvatarIKGoal.RightHand, 1);
+                anim.SetIKRotation(AvatarIKGoal.RightHand, weapon.rightHandPoint.rotation);
+                anim.SetIKRotationWeight(AvatarIKGoal.RightHand, 1);
+            }
+            else
+            {
+                anim.SetIKPositionWeight(AvatarIKGoal.RightHand, 1);
+                anim.SetIKRotationWeight(AvatarIKGoal.RightHand, 1);
+            }
+
+            if (weapon.leftHandPoint != null)
+            {
+                anim.SetIKPosition(AvatarIKGoal.LeftHand, weapon.leftHandPoint.position);
+                anim.SetIKPositionWeight(AvatarIKGoal.LeftHand, 1);
+                anim.SetIKRotation(AvatarIKGoal.LeftHand, weapon.leftHandPoint.rotation);
+                anim.SetIKRotationWeight(AvatarIKGoal.LeftHand, 1);
+            }
+            else
+            {
+                anim.SetIKPositionWeight(AvatarIKGoal.LeftHand, 1);
+                anim.SetIKRotationWeight(AvatarIKGoal.LeftHand, 1);
+            }
+        }
+        else
+        {
+            anim.SetIKPositionWeight(AvatarIKGoal.RightHand, 1);
+            anim.SetIKRotationWeight(AvatarIKGoal.RightHand, 1);
+            anim.SetIKPositionWeight(AvatarIKGoal.LeftHand, 1);
+            anim.SetIKRotationWeight(AvatarIKGoal.LeftHand, 1);
+            anim.SetLookAtWeight(0);
+        }
     }
 }
