@@ -17,6 +17,9 @@ public abstract class Weapon : MonoBehaviour
     public Transform bulletSpawn;
     public float bulletSpeed;
 
+    public float fireRate;
+    private float nextFire = 0;
+
 
     // Start is called before the first frame update
     public virtual void Start()
@@ -31,7 +34,19 @@ public abstract class Weapon : MonoBehaviour
     }
 
     public abstract void OnTriggerPull();
-    public abstract void OnTriggerHold();
+    public void OnTriggerHold()
+    {
+        // Timer for fire speed.
+        isTriggerPulled = true;
+        if (Time.time > nextFire)
+        {
+            // More Fire rate.
+            nextFire = Time.time + fireRate;
+            // Run Shoot.
+            Shoot();
+        }
+    }
+
     public abstract void OnTriggerRelease();
     public virtual void Shoot()
     {

@@ -4,11 +4,6 @@ using UnityEngine;
 
 public class PistolWeapon : Weapon
 {
-    public override void OnTriggerHold()
-    {
-        isTriggerPulled = true;
-    }
-
     public override void OnTriggerPull()
     {
         // Calls Shoot.

@@ -23,13 +23,17 @@ public class WeaponPickup : Pickup
 
     public void OnTriggerEnter(Collider other)
     {
-        // Gets the pawn.
-        Pawn pawnComponent = other.GetComponent<Pawn>();
-        // Makes sure the rifle can be swapped to.
-        pawnComponent.hasRifle = true;
-        // Switches to the rifle on picking it up.
-        pawnComponent.EquipWeapon(pawnComponent.pistol.GetComponent<PistolWeapon>());
-        // Runs OnPickup.
-        OnPickup();
+        if(other.CompareTag("Player") || other.CompareTag("Enemy"))
+        {
+            // Gets the pawn.
+            Pawn pawnComponent = other.GetComponent<Pawn>();
+            // Makes sure the rifle can be swapped to.
+            pawnComponent.hasRifle = true;
+            // Switches to the rifle on picking it up.
+            pawnComponent.EquipWeapon(pawnComponent.pistol.GetComponent<PistolWeapon>());
+            pawnComponent.PickUpWeapon(pawnComponent.pistol.GetComponent<PistolWeapon>());
+            // Runs OnPickup.
+            OnPickup();
+        }
     }
 }

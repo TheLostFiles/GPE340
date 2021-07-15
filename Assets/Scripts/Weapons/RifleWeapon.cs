@@ -4,23 +4,6 @@ using UnityEngine;
 
 public class RifleWeapon : Weapon
 {
-    public float fireRate;
-    private float nextFire = 0;
-
-
-    public override void OnTriggerHold()
-    {
-        // Timer for fire speed.
-        isTriggerPulled = true;
-        if(Time.time > nextFire)
-        {
-            // More Fire rate.
-            nextFire = Time.time + fireRate;
-            // Run Shoot.
-            Shoot();
-        }
-    }
-
     public override void OnTriggerPull()
     {
         
