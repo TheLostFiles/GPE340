@@ -26,11 +26,6 @@ public class PainPickup : Pickup
         Health healthComponent = other.GetComponent<Health>();
         // Runs hurt.
         healthComponent.Hurt(amountToHurt);
-    }
-
-    public override void OnPickup()
-    {
-        // Destroys the pickup
-        Destroy(gameObject);
+        base.OnPickup();
     }
 }

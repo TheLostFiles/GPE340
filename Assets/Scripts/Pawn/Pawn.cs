@@ -15,13 +15,22 @@ public class Pawn : MonoBehaviour
     public Health health;
 
     public GameObject pistol;
-    public GameObject rifle;
+    public GameObject rifle;    
+    
+
+
     public bool hasRifle;
 
     private Collider topCollider;
     private Rigidbody topRigidbody;
-    private List<Collider> ragdollColliders;
-    private List<Rigidbody> ragdollRigidbodies;
+    public List<Collider> ragdollColliders;
+    public List<Rigidbody> ragdollRigidbodies;
+
+
+
+    public PlayerController pc;
+
+    public bool isDead = false;
 
     // Start is called before the first frame update
     void Start()
@@ -35,6 +44,8 @@ public class Pawn : MonoBehaviour
         ragdollColliders = new List<Collider>(GetComponentsInChildren<Collider>());
         ragdollRigidbodies = new List<Rigidbody>(GetComponentsInChildren<Rigidbody>());
 
+        pc = GetComponent<PlayerController>();
+
         StopRagdoll();
     }
 
@@ -44,10 +55,12 @@ public class Pawn : MonoBehaviour
         // Checks if health is zero
         if(health.currentHealth <= 0)
         {
+            isDead = true; 
             StartCoroutine(Die());
         }
     }
 
+    // Pickup and swapping of weapons for players
     public void EquipWeapon(Weapon weaponSwap)
     {
         // Checks if the has rifle bool is true.
@@ -58,6 +71,9 @@ public class Pawn : MonoBehaviour
             {
                 pistol.SetActive(false);
                 rifle.SetActive(true);
+                pc.pistolImage.SetActive(false);
+                pc.rifleImage.SetActive(true);
+
                 weapon = rifle.GetComponent<RifleWeapon>();
             }
         }
@@ -66,10 +82,14 @@ public class Pawn : MonoBehaviour
         {
             pistol.SetActive(true);
             rifle.SetActive(false);
+            pc.pistolImage.SetActive(true);
+            pc.rifleImage.SetActive(false);
+
             weapon = pistol.GetComponent<PistolWeapon>();
         }
     }
 
+    // Pickup weapon for enemies
     public void PickUpWeapon(Weapon weaponSwap)
     {
         if (hasRifle)
@@ -84,7 +104,7 @@ public class Pawn : MonoBehaviour
         }
     }
 
-    // This makes the hands move to their designated spots.
+    // This makes the hands move to their designated spots
     public void OnAnimatorIK(int layerIndex)
     {
         if(weapon != null)
@@ -128,6 +148,7 @@ public class Pawn : MonoBehaviour
         }
     }
 
+    // Getting hurt by bullets
     private void OnTriggerEnter(Collider other)
     {
         // Checks to see if it has the tag Bullet
@@ -140,6 +161,7 @@ public class Pawn : MonoBehaviour
         }
     }
 
+    // Death
     public IEnumerator Die()
     {
         //Ragdoll
@@ -148,16 +170,47 @@ public class Pawn : MonoBehaviour
         // Remove Enemy from list
         if (gameObject.CompareTag("Enemy"))
         {
+            // Removes from list
             GameManager.Instance.enemies.Remove(gameObject);
-        }
-        
-        // Wait
-        yield return new WaitForSeconds(5);
+            
 
-        // Destroy
-        Destroy(gameObject);
+            // Wait
+            yield return new WaitForSeconds(5);
+            
+            // Drops an Item
+            Instantiate(GameManager.Instance.GetComponent<DropManager>().DropItem(), gameObject.transform.position, Quaternion.identity);
+            
+            // Adds to the kill feed
+            GameManager.Instance.enemiesKilled++;
+
+            // Destroy
+            Destroy(gameObject);
+        }
+
+        if (gameObject.CompareTag("Player"))
+        {
+
+            // Reset Health
+            pc.GetComponent<Health>().currentHealth = pc.GetComponent<Health>().maxHealth;
+            
+            // Makes the health look like it is at 0
+            pc.healthText.text = "Health: 0/" + pc.GetComponent<Health>().maxHealth;
+
+            // wait
+            yield return new WaitForSeconds(3);
+
+            // Stop Ragdoll
+            StopRagdoll();
+
+            // Remove life
+            pc.lives--;
+
+            // Sets isDead to false
+            isDead = false;
+        }
     }
 
+    // Starts Ragdoll
     public void StartRagdoll()
     {
         // Turn off animator
@@ -185,10 +238,16 @@ public class Pawn : MonoBehaviour
         {
             GetComponent<AIController>().enabled = false;
         }
-        
-        
+
+        if (gameObject.CompareTag("Player"))
+        {
+            GetComponent<PlayerController>().enabled = false;
+        }
+
+
     }
 
+    // Ends ragdoll
     public void StopRagdoll()
     {
         // Turn on animator
@@ -213,6 +272,7 @@ public class Pawn : MonoBehaviour
         if (gameObject.CompareTag("Player"))
         {
             topRigidbody.isKinematic = false;
+            GetComponent<PlayerController>().enabled = true;
         }
         
     }

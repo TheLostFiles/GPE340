@@ -30,10 +30,17 @@ public class WeaponPickup : Pickup
             // Makes sure the rifle can be swapped to.
             pawnComponent.hasRifle = true;
             // Switches to the rifle on picking it up.
-            pawnComponent.EquipWeapon(pawnComponent.pistol.GetComponent<PistolWeapon>());
-            pawnComponent.PickUpWeapon(pawnComponent.pistol.GetComponent<PistolWeapon>());
+            if (other.CompareTag("Player"))
+            {
+                pawnComponent.EquipWeapon(pawnComponent.pistol.GetComponent<PistolWeapon>());
+            }
+            if (other.CompareTag("Enemy"))
+            {
+                pawnComponent.PickUpWeapon(pawnComponent.pistol.GetComponent<PistolWeapon>());
+            }
+                
             // Runs OnPickup.
-            OnPickup();
+            base.OnPickup();
         }
     }
 }

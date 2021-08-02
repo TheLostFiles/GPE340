@@ -16,5 +16,8 @@ public abstract class Pickup : MonoBehaviour
         
     }
 
-    public abstract void OnPickup();
+    public virtual void OnPickup()
+    {
+        Destroy(gameObject);
+    }
 }

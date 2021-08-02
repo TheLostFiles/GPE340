@@ -21,16 +21,15 @@ public class HealthPickup : Pickup
 
     public void OnTriggerEnter(Collider other)
     {
-        // Grabs the health componant.
-        Health healthComponent = other.GetComponent<Health>();
-        // Runs Heal.
-        healthComponent.Heal(amountToHeal);
-        // Runs OnPickup.
-        OnPickup();
-    }
-
-    public override void OnPickup()
-    {
-        Destroy(gameObject);
+        if(other.CompareTag("Player") || other.CompareTag("Enemy"))
+        {
+            // Grabs the health componant.
+            Health healthComponent = other.GetComponent<Health>();
+            // Runs Heal.
+            healthComponent.Heal(amountToHeal);
+            // Runs OnPickup.
+            base.OnPickup();
+        }
+        
     }
 }

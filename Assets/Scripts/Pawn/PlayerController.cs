@@ -10,11 +10,17 @@ public class PlayerController : MonoBehaviour
     public Pawn pawn;
 
     public Text healthText;
+    public Text livesText;
+
+    public float lives = 3;
+
+    public GameObject pistolImage;
+    public GameObject rifleImage;
 
     // Start is called before the first frame update
     void Start()
     {
-        
+        pawn = GetComponent<Pawn>();
     }
 
     // Update is called once per frame
@@ -66,7 +72,13 @@ public class PlayerController : MonoBehaviour
             pawn.EquipWeapon(pawn.weapon);
         }
         // Keeps the health UI Updated.
-        healthText.text = "Health: " + GetComponent<Health>().currentHealth + "/" + GetComponent<Health>().maxHealth;
+        if (!pawn.isDead)
+        {
+            healthText.text = "Health: " + GetComponent<Health>().currentHealth + "/" + GetComponent<Health>().maxHealth;
+        }
+
+        livesText.text = "Lives: " + lives;
+
     }
 
     public void RotateToMousePointer()

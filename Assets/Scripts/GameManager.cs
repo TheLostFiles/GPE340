@@ -2,12 +2,18 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+
 public class GameManager : MonoBehaviour
 {
     private static GameManager _instance;
 
     public List<GameObject> enemies;
 
+    public float killsToWin;
+    public float enemiesKilled;
+    
+
+    public PlayerController pc;
 
     public static GameManager Instance
     {
@@ -22,8 +28,18 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    // Add your game mananger members here
-    public void Pause(bool paused)
+    public void Start()
     {
+        pc = GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerController>();
+    }
+
+    public void Update()
+    {
+        if(pc.lives <= 0)
+        {
+            //Change Scene
+
+            Debug.Log("YOU DIED");
+        }
     }
 }
