@@ -13,11 +13,14 @@ public class Pawn : MonoBehaviour
     
     public Weapon weapon;
     public Health health;
+    public ParticleSystem hurt;
 
     public GameObject pistol;
     public GameObject rifle;    
-    
 
+    public PlayerController pc;
+
+    public bool isDead = false;
 
     public bool hasRifle;
 
@@ -27,10 +30,6 @@ public class Pawn : MonoBehaviour
     public List<Rigidbody> ragdollRigidbodies;
 
 
-
-    public PlayerController pc;
-
-    public bool isDead = false;
 
     // Start is called before the first frame update
     void Start()
@@ -157,6 +156,7 @@ public class Pawn : MonoBehaviour
             // Makes it lose health
             health.Hurt(1);
             // Destorys the bullet
+            hurt.Play();
             Destroy(other.gameObject);
         }
     }

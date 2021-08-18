@@ -7,11 +7,14 @@ public class GameManager : MonoBehaviour
 {
     private static GameManager _instance;
 
+   
+
     public List<GameObject> enemies;
 
     public float killsToWin;
     public float enemiesKilled;
-    
+    public GameObject winMenuUI;
+    public GameObject loseMenuUI;
 
     public PlayerController pc;
 
@@ -37,9 +40,13 @@ public class GameManager : MonoBehaviour
     {
         if(pc.lives <= 0)
         {
-            //Change Scene
+            loseMenuUI.SetActive(true);
+        }
 
-            Debug.Log("YOU DIED");
+        if (GameManager.Instance.enemiesKilled == GameManager.Instance.killsToWin)
+        {
+            // sets the win UI to active
+            winMenuUI.SetActive(true);
         }
     }
 }

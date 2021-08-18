@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
+using UnityEngine.Audio;
 
 public abstract class Weapon : MonoBehaviour
 {
@@ -16,6 +17,9 @@ public abstract class Weapon : MonoBehaviour
     public GameObject bulletPrefab;
     public Transform bulletSpawn;
     public float bulletSpeed;
+    public AudioSource audioSource;
+    public AudioClip bulletSound;
+    public ParticleSystem muzzleFlash;
 
     public float fireRate;
     private float nextFire = 0;
@@ -24,7 +28,7 @@ public abstract class Weapon : MonoBehaviour
     // Start is called before the first frame update
     public virtual void Start()
     {
-        
+        audioSource = GetComponent<AudioSource>();
     }
 
     // Update is called once per frame
@@ -52,6 +56,10 @@ public abstract class Weapon : MonoBehaviour
     {
         // Instatiates bullet
         GameObject bullet = Instantiate(bulletPrefab, bulletSpawn.position, bulletSpawn.rotation);
+        // Plays the Audio Source
+        audioSource.Play();
+        // Plays the particle system
+        muzzleFlash.Play();
         // Makes the bullet move.
         bullet.GetComponent<Rigidbody>().velocity = bulletSpawn.TransformDirection(Vector3.forward * bulletSpeed);
         // Starts Coroutine.
@@ -63,6 +71,7 @@ public abstract class Weapon : MonoBehaviour
         // Waits 2 seconds.
         yield return new WaitForSeconds(2);
         // Destroys bullet.
+
         Destroy(bullet);
     }
 
